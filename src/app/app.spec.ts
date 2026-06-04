@@ -1,23 +1,39 @@
 import { TestBed } from '@angular/core/testing';
-import { App } from './app';
+import { provideRouter } from '@angular/router';
+import { AppComponent } from './app';
+import { AuthService } from './core/services/auth.service';
 
-describe('App', () => {
+describe('AppComponent', () => {
+  const mockAuthService = {
+    isLoggedIn: jasmine.createSpy('isLoggedIn').and.returnValue(false),
+    currentUser: jasmine.createSpy('currentUser').and.returnValue(null),
+    logout: jasmine.createSpy('logout'),
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [App],
+      imports: [AppComponent],
+      providers: [
+        provideRouter([]),
+        { provide: AuthService, useValue: mockAuthService },
+      ],
     }).compileComponents();
   });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+  it('should create the component', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(App);
+  it('should render the navbar', () => {
+    const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, meeting-room-booking');
+    expect(fixture.nativeElement.querySelector('app-navbar')).not.toBeNull();
+  });
+
+  it('should render the router outlet', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('router-outlet')).not.toBeNull();
   });
 });
