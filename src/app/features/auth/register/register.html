@@ -1,0 +1,87 @@
+  <div class="auth-container">
+      <div class="auth-card">
+
+        <div class="auth-header"> <div class="auth-icon">🏢</div>
+          <h2>Meeting Room Booking</h2>
+          <p>Create your account to get started</p>
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+          <div class="form-group">
+            <label for="fullName"> Full Name <span class="required">*</span> </label>
+
+            <input id="fullName" type="text" formControlName="fullName" placeholder="John Doe" autocomplete="name"
+              [class.is-invalid]="isInvalid('fullName')" [class.is-valid]="isValid('fullName')" />
+            @if (isInvalid('fullName')) {
+              <span class="field-error"> {{ getFieldError('fullName') }} </span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="email"> Email Address <span class="required">*</span> </label>
+            <input id="email" type="email" formControlName="email" placeholder="you@company.com" autocomplete="email"
+              [class.is-invalid]="isInvalid('email')"  [class.is-valid]="isValid('email')" />
+            @if (isInvalid('email')) {
+              <span class="field-error"> {{ getFieldError('email') }} </span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="password"> Password <span class="required">*</span> </label>
+            <div class="input-wrapper">
+              <input id="password" [type]="showPassword ? 'text' : 'password'"
+                formControlName="password" placeholder="Minimum 6 characters" autocomplete="new-password"
+                [class.is-invalid]="isInvalid('password')" [class.is-valid]="isValid('password')" />
+
+              <button  type="button" class="toggle-password" (click)="togglePassword()"> 
+                {{ showPassword ? '🙈' : '👁️' }}
+              </button>
+            </div>
+            @if (isInvalid('password')) {
+              <span class="field-error"> {{ getFieldError('password') }} </span>
+            }
+
+            @if (registerForm.get('password')?.value) {
+              <div class="password-strength">
+                <div class="strength-bar" [class.weak]="passwordStrength === 'weak'"
+                  [class.medium]="passwordStrength === 'medium'" [class.strong]="passwordStrength === 'strong'">
+                </div>
+                <span class="strength-label"> {{ passwordStrength | titlecase }} </span>
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword"> Confirm Password <span class="required">*</span> </label>
+            <input id="confirmPassword" [type]="showPassword ? 'text' : 'password'"
+              formControlName="confirmPassword" placeholder="Repeat your password" autocomplete="new-password"
+              [class.is-invalid]="isInvalid('confirmPassword') || (registerForm.errors?.['passwordMismatch']
+                && registerForm.get('confirmPassword')?.touched)"
+              [class.is-valid]="isValid('confirmPassword') && !registerForm.errors?.['passwordMismatch']" />
+            @if (isInvalid('confirmPassword')) {
+              <span class="field-error"> Confirm password is required </span>
+            }
+            @if (registerForm.errors?.['passwordMismatch'] && registerForm.get('confirmPassword')?.touched
+              && !isInvalid('confirmPassword')) {
+              <span class="field-error"> Passwords do not match </span>
+            }
+          </div>
+
+          <!-- API Error -->
+          @if (apiError) {
+            <div class="alert alert-error">
+              <span class="alert-icon">⚠️</span>
+              <span>{{ apiError }}</span>
+            </div>
+          }
+
+          <button type="submit" class="btn-submit" [disabled]="loading">
+            @if (loading) { <span class="spinner"></span>  Creating account...
+            } @else { Create Account }
+          </button>
+
+          <div class="auth-divider"> <span>Already have an account?</span> </div>
+          <a routerLink="/login" class="btn-secondary-link"> Sign in instead </a>
+        </form>
+      </div>
+    </div>

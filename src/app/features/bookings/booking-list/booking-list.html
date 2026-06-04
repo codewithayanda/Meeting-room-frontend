@@ -1,0 +1,66 @@
+<div class="page-header">
+      <h1>{{ roomId ? 'Room Bookings' : 'All Bookings' }}</h1>
+      <button class="btn-primary" (click)="createBooking()"> + New Booking </button>
+    </div>
+
+    @if (loading) {
+      <div class="loading">Loading bookings...</div>
+    }
+
+    @if (error) {
+      <div class="error-message">⚠️ {{ error }}</div>
+    }
+
+    @if (!loading && !error) {
+      @if (bookings.length === 0) {
+        <div class="empty-state">
+          <p>📅 No bookings found</p>
+          <button class="btn-primary" (click)="createBooking()"> Create First Booking </button>
+        </div>
+      } @else {
+        <div class="bookings-list">
+          @for (booking of bookings; track booking.id) {
+            <div class="booking-card"
+              [class.cancelled]="booking.status === 'Cancelled'">
+              <div class="booking-header">
+                <h3>{{ booking.title }}</h3>
+                <span class="status-badge"
+                  [class.active]="booking.status === 'Active'"
+                  [class.cancelled]="booking.status === 'Cancelled'">
+                  {{ booking.status }}
+                </span>
+              </div>
+              <div class="booking-details">
+                <p>🏛️ {{ booking.roomName }}</p>
+                <p>👤 {{ booking.organizerName }} ({{ booking.organizerEmail }})</p>
+                <p>🕐 {{ booking.startTime | date:'medium' }} → {{ booking.endTime | date:'shortTime' }}</p>
+              </div>
+              @if (booking.status === 'Active') {
+                <div class="booking-actions">
+                  <button class="btn-secondary" (click)="editBooking(booking.id)"> ✏️ Edit </button>
+                  <button class="btn-danger" (click)="cancelBooking(booking)"> ❌ Cancel </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+
+    @if (showConfirmDialog) {
+      <div class="modal-overlay">
+        <div class="modal">
+          <h3>Cancel Booking</h3>
+          <p>Are you sure you want to cancel "{{ selectedBooking?.title }}"?</p>
+          <p>This action cannot be undone.</p>
+          <div class="modal-actions">
+            <button class="btn-secondary" (click)="showConfirmDialog = false"> Keep Booking </button>
+            <button class="btn-danger" (click)="confirmCancel()"> Yes, Cancel </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (successMessage) {
+      <div class="success-toast">  ✅ {{ successMessage }} </div>
+    }

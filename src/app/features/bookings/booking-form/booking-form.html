@@ -1,0 +1,91 @@
+<div class="form-container">
+  <div class="form-header">
+    <h1>{{ isEditMode ? 'Edit Booking' : 'New Booking' }}</h1>
+    <button class="btn-back" (click)="goBack()">← Back</button>
+  </div>
+
+  @if (loadingBooking) {
+    <div class="loading">Loading booking details...</div>
+  } @else {
+    <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()">
+
+      <div class="form-group">
+        <label for="title">Booking Title *</label>
+        <input id="title" type="text" formControlName="title" placeholder="e.g. Q4 Planning Meeting"
+          [class.invalid]="isInvalid('title')" />
+        @if (isInvalid('title')) {
+          <span class="error"> {{ getError('title') }} </span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="roomId">Meeting Room *</label>
+        <select id="roomId" formControlName="roomId" [class.invalid]="isInvalid('roomId')">
+          <option value="">-- Select a Room --</option>
+          @for (room of rooms; track room.id) {
+            <option [value]="room.id">
+              {{ room.name }} (Capacity: {{ room.capacity }})
+            </option>
+          }
+        </select>
+        @if (isInvalid('roomId')) {
+          <span class="error">Please select a room</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="startTime">Start Time *</label>
+        <input id="startTime"  type="datetime-local" formControlName="startTime" [class.invalid]="isInvalid('startTime')" />
+        @if (isInvalid('startTime')) {
+          <span class="error"> {{ getError('startTime') }} </span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="endTime">End Time *</label>
+        <input id="endTime"  type="datetime-local" formControlName="endTime" [class.invalid]="isInvalid('endTime')" />
+        @if (isInvalid('endTime')) {
+          <span class="error"> {{ getError('endTime') }} </span>
+        }
+
+        @if (bookingForm.errors?.['endBeforeStart']
+          && bookingForm.get('endTime')?.touched) {
+          <span class="error"> End time must be after start time </span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="organizerName">Your Name *</label>
+        <input id="organizerName" type="text" formControlName="organizerName" placeholder="Full name"
+          [class.invalid]="isInvalid('organizerName')" />
+        @if (isInvalid('organizerName')) {
+          <span class="error">Name is required</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="organizerEmail">Your Email *</label>
+        <input id="organizerEmail" type="email" formControlName="organizerEmail" placeholder="email@company.com"
+          [class.invalid]="isInvalid('organizerEmail')" />
+        @if (isInvalid('organizerEmail')) {
+          <span class="error"> {{ getError('organizerEmail') }} </span>
+        }
+      </div>
+
+      @if (apiError) {
+        <div class="api-error"> {{ apiError }} </div>
+      }
+
+      @if (successMessage) {
+        <div class="success-message"> {{ successMessage }} </div>
+      }
+
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="goBack()"> Cancel </button>
+        <button type="submit" class="btn-primary" [disabled]="submitting">
+          {{ submitting ? 'Saving...' : isEditMode ? 'Update Booking' : 'Create Booking' }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

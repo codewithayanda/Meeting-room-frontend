@@ -1,0 +1,33 @@
+<div class="page-header">
+  <h1>Meeting Rooms</h1>
+  <p>Select a room to view its bookings</p>
+</div>
+
+@if (loading) {
+  <div class="loading">Loading rooms...</div>
+}
+
+@if (error) {
+  <div class="error-message">⚠️ {{ error }}
+    <button (click)="loadRooms()">Try Again</button>
+  </div>
+}
+
+@if (!loading && !error) {
+  <div class="rooms-grid">
+    @for (room of rooms; track room.id) {
+      <div class="room-card" (click)="viewBookings(room.id)">
+        <div class="room-icon">🏛️</div>
+        <h3>{{ room.name }}</h3>
+        <p>{{ room.description }}</p>
+        <div class="room-meta">
+          <span>👥 Capacity: {{ room.capacity }}</span>
+        </div>
+        <button class="btn-secondary" (click)="viewBookings(room.id); $event.stopPropagation()"> View Bookings </button>
+        <button class="btn-primary" (click)="bookRoom(room.id); $event.stopPropagation()"> Book Room </button>
+      </div>
+    } @empty {
+      <p>No rooms available</p>
+    }
+  </div>
+}
